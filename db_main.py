@@ -18,18 +18,35 @@ async def ping(ctx):
     await ctx.send(f'Pong! Current latency: {round( client.latency * 1000) }ms ')
 
 @client.command()
+async def DotBang(ctx, input_section=None):
+    if input_section == "-help":
+        await ctx.send(f"__Available bot services__")
+        await ctx.send(f"ping")
+        await ctx.send(f"attendance <-p> <-s> <Voice_Channel_Name>")
+        await ctx.send(f"list_channels")
+        await ctx.send(f"list_channel_members <Voice_Channel_Name>")
+    else:
+        await ctx.send(f"DotBang is a bot written by James Kunstle.")
+        await ctx.send(f"It supports some basic functionalities at the moment with more on the way.")
+        await ctx.send(f"WARNING: Failures are not verbose. If there is no output then a command has failed.")
+        await ctx.send(f"Please enter: \".!DotBang -help\" for more information.""")
+
+@client.command()
 async def attendance(ctx, *, inputs):
 
     # -p = print to screen
     # -s = save absent to buffer
 
     input_tokens: List = inputs.split(" ")
+    p_flag: bool = False
+    s_flag: bool = False
+
     
     if "-p" in input_tokens:
-        await ctx.send("print command acknowledged.")
+        p_flag = True
 
     if "-s" in input_tokens:
-        await ctx.send("save command acknowledged.")
+        s_flag = True
 
     channel_name: str = "" #this is how we access the channel that we are taking attendance in.
 
@@ -53,20 +70,24 @@ async def attendance(ctx, *, inputs):
     those_in_channel = [mem.nick for mem in current_channel.members]
     those_total = [mem.nick for mem in client.guilds[0].members]
 
-    difference = set(those_total) - (set(those_in_channel) & set(those_total))
+    those_absent = set(those_total) - (set(those_in_channel) & set(those_total))
 
-    if len(difference) > 0:
-        await ctx.send(f"____Those that were absent____")
+    if p_flag:
+        if len(those_absent) > 0:
+            await ctx.send(f"____Those that were absent____")
 
-        for absent in difference:
-            await ctx.send(f"~~{absent}")
+            for absent in those_absent:
+                await ctx.send(f"~~{absent}")
 
-        await ctx.send(f"____Those that were present____")
+            await ctx.send(f"____Those that were present____")
 
-        for present in set(those_in_channel):
-            await ctx.send(f"~~{present}")
+            for present in set(those_in_channel):
+                await ctx.send(f"~~{present}")
 
-    await ctx.send("--Attendance Complete--")
+        await ctx.send("--Attendance Complete--")
+    
+    if s_flag:
+        await ctx.send(f"/saving not currently supported/")
 
 
 @client.command()
