@@ -9,6 +9,8 @@ load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 
+print(f'Current token: {TOKEN}')
+
 @client.event
 async def on_ready():
     print("Bot Ready!")
